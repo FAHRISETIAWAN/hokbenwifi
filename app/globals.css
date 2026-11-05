@@ -1,26 +1,114 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-heading: var(--font-sans);
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Binance-style extra tokens */
+  --color-primary-active: #f0b90b;
+  --color-surface-elevated: var(--surface-elevated);
+  --color-brand: var(--brand);
+  --color-trading-up: #0ecb81;
+  --color-trading-down: #f6465d;
+  --color-info: #3b82f6;
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-2xl: 12px;
+  --radius-3xl: 12px;
+  --radius-4xl: 12px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* Light (transactional canvas) */
+:root {
+  --radius: 0.5rem;
+  --background: #ffffff;
+  --foreground: #181a20;
+  --card: #fafafa;
+  --card-foreground: #181a20;
+  --popover: #ffffff;
+  --popover-foreground: #181a20;
+  --primary: #fcd535;
+  --primary-foreground: #181a20;
+  --secondary: #f5f5f5;
+  --secondary-foreground: #181a20;
+  --muted: #f5f5f5;
+  --muted-foreground: #707a8a;
+  --accent: #f5f5f5;
+  --accent-foreground: #181a20;
+  --destructive: #f6465d;
+  --border: #eaecef;
+  --input: #eaecef;
+  --ring: #3b82f6;
+  --surface-elevated: #f5f5f5;
+  --brand: #c99400; /* yellow as text, readable on white */
+}
+
+/* Dark (marketing canvas) */
+.dark {
+  --background: #0b0e11;
+  --foreground: #eaecef;
+  --card: #1e2329;
+  --card-foreground: #eaecef;
+  --popover: #1e2329;
+  --popover-foreground: #eaecef;
+  --secondary: #2b3139;
+  --secondary-foreground: #ffffff;
+  --muted: #2b3139;
+  --muted-foreground: #929aa5;
+  --accent: #2b3139;
+  --accent-foreground: #ffffff;
+  --border: #2b3139;
+  --input: #2b3139;
+  --surface-elevated: #2b3139;
+  --brand: #fcd535;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  html {
+    @apply font-sans;
+  }
+  h1, h2, h3 {
+    @apply font-bold tracking-tight;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* BinancePlex-style tabular numbers */
+.font-num {
+  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
 }
