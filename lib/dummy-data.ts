@@ -17,11 +17,22 @@ export const DUMMY_VALID_OTP = "123456";
 // OTP dummy yang dianggap sudah kadaluarsa
 export const DUMMY_EXPIRED_OTPS = ["000000"];
 
+// OTP dummy dengan sisa durasi WiFi tinggal 5 detik (untuk demo "waktu habis")
+export const DUMMY_ALMOST_ENDED_OTP = "555555";
+export const ALMOST_ENDED_SECONDS = 5;
+
 export const WIFI_DURATION_MINUTES = 60;
+export const WIFI_DURATION_SECONDS = WIFI_DURATION_MINUTES * 60;
+
+export function formatDuration(seconds: number): string {
+  if (seconds >= 3600) return `${Math.round(seconds / 3600)} jam`;
+  if (seconds >= 60) return `${Math.round(seconds / 60)} menit`;
+  return `${seconds} detik`;
+}
 
 export type CheckResult =
   | { ok: false; reason: "invalid_otp" | "invalid_email" | "expired_otp" }
-  | { ok: true; status: "not_registered" | "registered" | "member"; email: string };
+  | { ok: true; status: "not_registered" | "registered" | "member"; email: string; remainingSeconds: number };
 
 export function checkUser(emailRaw: string, otp: string): CheckResult {
   const email = emailRaw.trim().toLowerCase();
@@ -29,11 +40,14 @@ export function checkUser(emailRaw: string, otp: string): CheckResult {
     return { ok: false, reason: "invalid_email" };
   }
   if (DUMMY_EXPIRED_OTPS.includes(otp)) return { ok: false, reason: "expired_otp" };
-  if (otp !== DUMMY_VALID_OTP) return { ok: false, reason: "invalid_otp" };
+  if (otp !== DUMMY_VALID_OTP && otp !== DUMMY_ALMOST_ENDED_OTP) return { ok: false, reason: "invalid_otp" };
+
+  const remainingSeconds =
+    otp === DUMMY_ALMOST_ENDED_OTP ? ALMOST_ENDED_SECONDS : WIFI_DURATION_SECONDS;
 
   const user = DUMMY_USERS.find((u) => u.email === email);
   // Email tidak ada di data = dianggap belum terdaftar
-  if (!user || !user.terdaftar) return { ok: true, status: "not_registered", email };
-  if (!user.member) return { ok: true, status: "registered", email };
-  return { ok: true, status: "member", email };
+  if (!user || !user.terdaftar) return { ok: true, status: "not_registered", email, remainingSeconds };
+  if (!user.member) return { ok: true, status: "registered", email, remainingSeconds };
+  return { ok: true, status: "member", email, remainingSeconds };
 }

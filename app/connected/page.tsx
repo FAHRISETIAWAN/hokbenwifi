@@ -6,6 +6,7 @@ import { BadgeCheck, Clock } from "lucide-react";
 import { Countdown } from "@/components/Countdown";
 import { IconBox } from "@/components/IconBox";
 import { SuccessLottie } from "@/components/SuccessLottie";
+import { WifiEndedDialog } from "@/components/WifiEndedDialog";
 import { PageHeading, Shell } from "@/components/Shell";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -18,13 +19,15 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useSession } from "@/lib/session";
-import { WIFI_DURATION_MINUTES } from "@/lib/dummy-data";
+import { WIFI_DURATION_SECONDS, formatDuration } from "@/lib/dummy-data";
 
 export default function ConnectedPage() {
   const router = useRouter();
   const session = useSession();
   const email = session?.email;
+  const seconds = session?.remainingSeconds ?? WIFI_DURATION_SECONDS;
   const [open, setOpen] = useState(true);
+  const [ended, setEnded] = useState(false);
 
   useEffect(() => {
     if (session === null || (session && !email)) router.replace("/");
@@ -40,7 +43,13 @@ export default function ConnectedPage() {
 
       <Card>
         <CardContent>
-          <Countdown minutes={WIFI_DURATION_MINUTES} />
+          <Countdown
+            seconds={seconds}
+            onEnd={() => {
+              setOpen(false);
+              setEnded(true);
+            }}
+          />
         </CardContent>
       </Card>
 
@@ -52,7 +61,7 @@ export default function ConnectedPage() {
               <DialogTitle className="text-2xl">Selamat!</DialogTitle>
               <DialogDescription className="text-sm leading-relaxed">
                 Anda berhasil connect WiFi gratis. Nikmati internetmu selama{" "}
-                <span className="font-num font-semibold text-foreground">1 jam</span>.
+                <span className="font-num font-semibold text-foreground">{formatDuration(seconds)}</span>.
               </DialogDescription>
             </div>
           </DialogHeader>
@@ -62,7 +71,7 @@ export default function ConnectedPage() {
               <IconBox icon={Clock} size="sm" />
               <div>
                 <p className="text-xs text-muted-foreground">Durasi</p>
-                <p className="font-num text-sm font-semibold">{WIFI_DURATION_MINUTES} menit</p>
+                <p className="font-num text-sm font-semibold">{formatDuration(seconds)}</p>
               </div>
             </div>
             <div className="flex items-center gap-2.5 rounded-xl bg-muted/60 p-3">
@@ -88,6 +97,8 @@ export default function ConnectedPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <WifiEndedDialog open={ended} />
     </Shell>
   );
 }

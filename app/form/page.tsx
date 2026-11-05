@@ -53,7 +53,11 @@ export default function FormPage() {
         setError(data.reason === "invalid_otp" ? "Kode OTP salah." : "Format email tidak valid.");
         return;
       }
-      saveSession({ ...(loadSession() ?? { code: "" }), email: data.email });
+      saveSession({
+        ...(loadSession() ?? { code: "" }),
+        email: data.email,
+        remainingSeconds: data.remainingSeconds,
+      });
       router.push(ROUTES[data.status as keyof typeof ROUTES]);
     } catch {
       setError("Terjadi kesalahan, coba lagi.");

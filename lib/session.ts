@@ -4,7 +4,7 @@ import { useMemo, useSyncExternalStore } from "react";
 
 const KEY = "hokben-wifi-session";
 
-export type Session = { code: string; email?: string };
+export type Session = { code: string; email?: string; remainingSeconds?: number };
 
 export function saveSession(s: Session) {
   try {

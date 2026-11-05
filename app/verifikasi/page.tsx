@@ -4,12 +4,13 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Gift, Star, Cake, Truck } from "lucide-react";
 import { Countdown } from "@/components/Countdown";
+import { WifiEndedDialog } from "@/components/WifiEndedDialog";
 import { PageHeading, Shell } from "@/components/Shell";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { useSession } from "@/lib/session";
-import { WIFI_DURATION_MINUTES } from "@/lib/dummy-data";
+import { WIFI_DURATION_SECONDS, formatDuration } from "@/lib/dummy-data";
 import { IconBox } from "@/components/IconBox";
 import { cn } from "@/lib/utils";
 
@@ -24,7 +25,9 @@ export default function VerifikasiPage() {
   const router = useRouter();
   const session = useSession();
   const email = session?.email;
+  const seconds = session?.remainingSeconds ?? WIFI_DURATION_SECONDS;
   const [connected, setConnected] = useState(false);
+  const [ended, setEnded] = useState(false);
 
   useEffect(() => {
     if (session === null || (session && !email)) router.replace("/");
@@ -36,7 +39,7 @@ export default function VerifikasiPage() {
     <Shell>
       <PageHeading title="Hampir" highlight="selesai!">
         Halo <span className="font-num text-foreground">{email}</span>, verifikasi untuk connect WiFi
-        gratis selama <span className="font-num text-foreground">{WIFI_DURATION_MINUTES}</span> menit.
+        gratis selama <span className="font-num text-foreground">{formatDuration(seconds)}</span>.
       </PageHeading>
 
       <Card>
@@ -44,11 +47,11 @@ export default function VerifikasiPage() {
           {connected ? (
             <div className="space-y-4">
               <p className="text-center font-semibold">Berhasil terhubung WiFi gratis</p>
-              <Countdown minutes={WIFI_DURATION_MINUTES} />
+              <Countdown seconds={seconds} onEnd={() => setEnded(true)} />
             </div>
           ) : (
             <Button size="lg" className="w-full" onClick={() => setConnected(true)}>
-              Verifikasi &amp; Connect (1 jam)
+              Verifikasi &amp; Connect ({formatDuration(seconds)})
             </Button>
           )}
         </CardContent>
@@ -90,6 +93,8 @@ export default function VerifikasiPage() {
           </AccordionItem>
         </Accordion>
       </section>
+
+      <WifiEndedDialog open={ended} />
     </Shell>
   );
 }
